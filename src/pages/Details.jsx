@@ -91,17 +91,16 @@ export default function Details({ setGenre }) {
   function handleSave(e) {
     e.preventDefault();
 
-    let movieObj = {};
     let url = "";
     let movieId = indicatorRef.current.value;
-    let image = inputImgRef.current.value;
+    let image = inputImgRef.current.files[0];
+
     let form = new FormData();
-    form.append('name', movie.name)
-    form.append('description', movie.description)
-    form.append('category', movie.category)
-    form.append('category_id', movie.category.id)
-    form.append('image',inputImgRef.current.value)
-    // console.log(image);
+    form.append("name", movie.name);
+    form.append("description", movie.description);
+    form.append("category", movie.category);
+    form.append("category_id", movie.category.id);
+    if (image) form.append("image", image);
 
     if (movieId === "") {
       //POST new movie
@@ -109,14 +108,16 @@ export default function Details({ setGenre }) {
     } else {
       //POST to edit existing one
       url = import.meta.env.VITE_BASE_URL + "/api/movies/" + id;
-      movieObj._method= "put";
+      form.append("_method", "put");
     }
 
     setIsLoading(true);
-    AxClient.post(url, form,{headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
-      }})
+    AxClient.post(url, form, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+    })
       .then(console.log)
       .catch(console.log)
       .finally(() => setIsLoading(false), setIsEditting(false));
@@ -141,6 +142,10 @@ export default function Details({ setGenre }) {
       <div className="w-9/12 md:w-3/6 mt-36 md:mt-2 relative">
         <img
           src={image ? `${image}` : placeholderImg}
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = "../assets/placeholder.webp";
+          }}
           className={`rounded-lg shadow-lg bg-slate-600 z-10 w-full`}
         />
         <div

@@ -8,7 +8,7 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [genres, setGenres] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const AxClient = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
@@ -17,16 +17,19 @@ export function UserProvider({ children }) {
     },
   });
 
-  // Response interceptor to check if any 403 errors then clear locals
+  // Response interceptor to check if any 401 errors then clear locals
   AxClient.interceptors.response.use(
     function (response) {
       return response;
     },
     function (error) {
-      if (error.response?.status === 403) {
+      if (
+        error.response?.status === 401 &&
+        error.response?.data?.message == "Unauthenticated."
+      ) {
         localStorage.clear();
-        navigate('/login')
-        setIsLoading(false)
+        navigate("/login");
+        setIsLoading(false);
       }
       return Promise.reject(error);
     }

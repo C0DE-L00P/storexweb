@@ -1,55 +1,59 @@
 import "./App.css";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { Home, Login, Details } from "./pages";
-import { Modal, NavBar } from "./components";
+import { NavBar } from "./components";
 import { useContext, useState } from "react";
 import UserContext from "./context/UserContext";
 
 function App() {
   const [genre, setGenre] = useState(0); //value of the genre as in the api
   const [showList, setShowList] = useState(false); //To show and hide categories list
-  const [hideUpperNavBar, setHideUpperNavBar] = useState(true);
   const { isLoading } = useContext(UserContext);
-
-  //TODO: maybe use Intersection Observer to hideUpperNavBar when scroll down
 
   return (
     <>
       <Spinner visible={isLoading} />
-      {/* <NavBar setGenre={setGenre} genre={genre} showList={showList} setShowList={setShowList} customClasses={`${hideUpperNavBar?'hidden':''}`}/> */}
       <NavBar
         setGenre={setGenre}
         genre={genre}
         showList={showList}
         setShowList={setShowList}
-        customClasses={`bg-blue-800 fixed top-0 left-0 right-0 z-50 shadow-md ${
-          !hideUpperNavBar ? "hidden" : ""
-        }`}
+        customClasses={`bg-blue-800 fixed top-0 left-0 right-0 z-50 shadow-md`}
       />
       <div className="h-[100px]"> </div>
       <div onClick={() => setShowList(false)}>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Login />} />
-          <Route element={<PrivateRoutes />}>
-            <Route path="/" element={<Home genre={genre} />} />
-            <Route
-              path="/movie/:id"
-              element={<Details setGenre={setGenre} />}
-            />
-            <Route
-              path="/movie"
-              element={<Details/>}
-            />
-          </Route>
-        </Routes>
+        <RoutesElement genre={genre} setGenre={setGenre} />
       </div>
     </>
   );
 }
+
+const RoutesElement = ({ genre, setGenre }) => (
+  <Routes>
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Login />} />
+    <Route element={<PrivateRoutes />}>
+      <Route path="/" element={<Home genre={genre} />} />
+      <Route path="/movie/:id" element={<Details setGenre={setGenre} />} />
+      <Route path="/movie" element={<Details />} />
+    </Route>
+  </Routes>
+);
+
+const PrivateRoutes = () => {
+  let auth = localStorage.getItem("AcToken");
+  if (!auth) return <Navigate to="/login" />;
+
+  return <Outlet />;
+};
+
 const Spinner = ({ visible }) => {
   return (
-    <div className={`fixed top-0 bottom-0 left-0 right-0 z-50 bg-white/20 ${visible?"flex":"hidden"} items-center justify-center`}>
+    <div
+      className={`fixed top-0 bottom-0 left-0 right-0 z-50 bg-white/20 ${
+        visible ? "flex" : "hidden"
+      } items-center justify-center`}
+    >
       <div className="text-center">
         <div role="status">
           <svg
@@ -72,13 +76,6 @@ const Spinner = ({ visible }) => {
       </div>
     </div>
   );
-};
-
-const PrivateRoutes = () => {
-  let auth = localStorage.getItem("AcToken");
-  if (!auth) return <Navigate to="/login" />;
-
-  return <Outlet />;
 };
 
 export default App;
