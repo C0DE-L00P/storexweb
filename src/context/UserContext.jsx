@@ -13,6 +13,7 @@ export function UserProvider({ children }) {
   const AxClient = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
     headers: {
+      "Access-Control-Allow-Origin":"*",
       authorization: "Bearer " + localStorage.getItem("AcToken"),
     },
   });

@@ -37,7 +37,8 @@ export default function Login() {
           formData
         );
       } catch (error) {
-        alert("error", error);
+        alert("Something went wrong", error);
+        setIsLoading(false)
       }
     } else {
       //Register Process
@@ -46,14 +47,15 @@ export default function Login() {
         return alert("Passwords are not identical");
 
       delete formData.con_password;
-      
+
       try {
         res = await axios.post(
           import.meta.env.VITE_BASE_URL + "/api/register",
           formData
         );
       } catch (error) {
-        alert("error", error);
+        alert("Something went wrong", error);
+        setIsLoading(false)
       }
     }
 
