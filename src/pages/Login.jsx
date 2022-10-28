@@ -1,12 +1,12 @@
 import axios from "axios";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import { motion } from "framer-motion";
 
 export default function Login() {
   const navigate = useNavigate();
-  //TODO use useRef to optimize later on
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,8 +15,7 @@ export default function Login() {
   });
   const [isLogin, setIsLogin] = useState(true);
   const { isLoading, setIsLoading } = useContext(UserContext);
-  // const {user, setUser} = useContext(UserContext)
-
+  
   async function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
@@ -36,6 +35,7 @@ export default function Login() {
         import.meta.env.VITE_BASE_URL + "/api/login",
         formData
       );
+      
     } else {
       //Register Process
       if (formData.name === "") return alert("Name can't be empty");
@@ -51,7 +51,7 @@ export default function Login() {
     }
 
     //Results
-    if (res.status !== 200 || res?.data?.message?.status === "failed") {
+    if (res.status !== 200) {
       setIsLoading(false);
       return alert("Something went wrong");
     }
