@@ -15,7 +15,7 @@ export default function Login() {
   });
   const [isLogin, setIsLogin] = useState(true);
   const { isLoading, setIsLoading } = useContext(UserContext);
-  
+
   async function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
@@ -31,11 +31,14 @@ export default function Login() {
       //Login Process
       delete formData.name;
       delete formData.con_password;
-      res = await axios.post(
-        import.meta.env.VITE_BASE_URL + "/api/login",
-        formData
-      );
-      
+      try {
+        res = await axios.post(
+          import.meta.env.VITE_BASE_URL + "/api/login",
+          formData
+        );
+      } catch (error) {
+        alert("error", error);
+      }
     } else {
       //Register Process
       if (formData.name === "") return alert("Name can't be empty");
@@ -43,11 +46,15 @@ export default function Login() {
         return alert("Passwords are not identical");
 
       delete formData.con_password;
-
-      res = await axios.post(
-        import.meta.env.VITE_BASE_URL + "/api/register",
-        formData
-      );
+      
+      try {
+        res = await axios.post(
+          import.meta.env.VITE_BASE_URL + "/api/register",
+          formData
+        );
+      } catch (error) {
+        alert("error", error);
+      }
     }
 
     //Results
@@ -68,9 +75,9 @@ export default function Login() {
     <div className="flex flex-col justify-center items-center">
       <motion.form
         layout
-        initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        exit={{opacity: 0}}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         onSubmit={handleSubmit}
         className="flex flex-col gap-2 p-12 bg-slate-800 backdrop-blur-md rounded-md shadow-md w-96"
       >
